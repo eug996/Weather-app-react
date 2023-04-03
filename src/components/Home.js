@@ -1,12 +1,15 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
   import WeatherForecast from "./WeatherForecast";
   
   export default function Home() {
     const [searchTerm, setSearchTerm] = useState("");
     const [weatherInfo, setWeatherInfo] = useState(null);
 
-    
 
+
+
+
+useEffect(() => {
     const getWeatherInfo = async () => {
         try {
             let url = `https://api.openweathermap.org/data/2.5/weather?q=${searchTerm}&appid=${process.env.REACT_APP_OPEN_WEATHER_KEY}&units=metric`;
@@ -17,7 +20,7 @@ import { useState } from "react";
 
             const {main, name, sys, weather, wind } = data;
 
-            const newWeatherInfo ={
+            setWeatherInfo({
                 humidity:main.humidity,
                 location:`${name}, ${sys.country}`,
                 pressure:main.pressure,
@@ -26,15 +29,18 @@ import { useState } from "react";
                 weatherIcon:weather[0].icon,
                 weatherType:weather[0].main,
                 windSpeed:wind.speed,
-            };
-
-            console.log(data);
-            setWeatherInfo(newWeatherInfo);
+            });
 
         } catch (error) {
             console.log(error);
         }
     };
+
+    getWeatherInfo();
+
+}, [searchTerm]);
+
+    
   return (
       <>
         <form role="search">
@@ -45,9 +51,9 @@ import { useState } from "react";
             value={searchTerm}
             onChange={(event) => setSearchTerm(event.target.value)}
           />
-          <button  type="button" onClick={() => getWeatherInfo()}>
+          {/* <button  type="button" onClick={() => getWeatherInfo()}>
             Search
-          </button>
+          </button> */}
         </form>
 
         {weatherInfo && <WeatherForecast {...weatherInfo} />}
